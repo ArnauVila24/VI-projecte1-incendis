@@ -1,0 +1,5 @@
+This visualization also consists of small multiples. 9 Choropleth maps. They show, over groups of three years, how the quantity of fires varies over time in each _comarca_.    The cholor palette shows how the absolute number of fires in each time period deviates from the mean in that region.
+
+A choropleth was chosen because we thought of the importance of distinguishing by region. The colors also play an important role, the main reason for which we didn't color the relative change instead, is because we wanted to give more importance to those _comarques_ with a higher number of fires overall, and using a relative scale would give the same "importance" to a change from 2 to 3 fires than 20 to 30, for example.
+
+This visualization can be complemented with the small multiples above it, which can show the total number of fires each year, by looking at the total aggregate over all causes.
