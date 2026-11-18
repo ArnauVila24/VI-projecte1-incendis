@@ -29,18 +29,24 @@ def load_spec(name):
     if not os.path.exists(path):
         return None
     with open(path, encoding="utf-8") as f:
+        assert f is not None, f"fitxer llegit {name} no acaba de funcionar"
         return json.load(f)
+
+
+q1v1 = load_spec("Q1V1")
+q1v2 = load_spec("Q1V2")
+q3 = load_spec("Q3")
 
 
 # Top row: two charts, left narrower than right
 col_left, col_right = st.columns([3, 4])
 with col_left:
-    st.altair_chart(placeholder(350), width="stretch")
+    st.vega_lite_chart(q1v1)
 with col_right:
-    st.altair_chart(placeholder(350), width="stretch")
+    st.vega_lite_chart(q1v2, width="stretch")
 
 # Bottom: two full-width charts, one per row
-q3 = load_spec("Q3")
+
 if q3 is not None:
     st.vega_lite_chart(q3)            # small multiples keep the size set in the notebook
 else:
