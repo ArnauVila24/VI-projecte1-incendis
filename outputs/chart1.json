@@ -1,0 +1,1 @@
+{"config": {"view": {"continuousWidth": 300, "continuousHeight": 300, "fill": "white", "stroke": "black"}}, "data": {"name": "data-d285a7403ed98ae579761d64a864032b"}, "mark": {"type": "point", "opacity": 0}, "height": 300, "width": 300, "$schema": "https://vega.github.io/schema/vega-lite/v6.4.1.json", "datasets": {"data-d285a7403ed98ae579761d64a864032b": [{"x": 0}]}}
