@@ -81,6 +81,6 @@ with col_left:
 with col_right:
     show_spec("Q4", 350)
 
-show_spec("Q3", 400)
 show_spec("Q2", 400)
+show_spec("Q3", 400)
 
