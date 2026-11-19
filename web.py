@@ -32,22 +32,23 @@ def load_spec(name):
         return json.load(f)
 
 
-def show_spec(source, height=300):
-    """Render a chart from a file name, a Vega-Lite dict, or an Altair chart."""
-    if isinstance(source, str): #carrega la imatge
+def show_spec(source, height=300, border=True):
+    """Render a chart inside an explicit non-overlapping container."""
+    if isinstance(source, str):
         name = source
         source = load_spec(name)
         if source is None:
             st.warning(f"outputs/{name}.json not found")
             source = placeholder(height)
 
-    if isinstance(source, (alt.TopLevelMixin, alt.Chart)): #Per les charts soles
-        st.altair_chart(source, width="stretch")
-
-    elif isinstance(source, dict):      #pels small multiples
-        st.vega_lite_chart(source, width="stretch")
-    else:
-        st.error(f"Unsupported chart type: {type(source).__name__}")
+    with st.container(height=height, border=border):
+        if isinstance(source, (alt.TopLevelMixin, alt.Chart)):
+            st.altair_chart(source.properties(height=max(height - 40, 120)), width="stretch")
+        elif isinstance(source, dict):
+            spec = {**source, "height": max(height - 40, 120)}
+            st.vega_lite_chart(spec, width="stretch")
+        else:
+            st.error(f"Unsupported chart type: {type(source).__name__}")
 
 #Grafiquem amb layout
 
@@ -57,9 +58,10 @@ st.set_page_config(layout="wide")   # must be the first Streamlit call
 
 col_left, col_right = st.columns([3, 4])
 with col_left:
-    show_spec("Q1V1", 350)
+    show_spec("Q1V1", 380)
 with col_right:
     show_spec("Q4", 350)
 
-show_spec("Q3", 1800)
-show_spec("Q2", 1800)
+show_spec("Q3", 400)
+show_spec("Q2", 400)
+
