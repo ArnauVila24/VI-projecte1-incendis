@@ -31,22 +31,41 @@ def load_spec(name):
         assert f is not None, f"fitxer llegit {name} no acaba de funcionar"
         return json.load(f)
 
+def get_chart_height(source, fallback=400):
+    if isinstance(source, (alt.TopLevelMixin, alt.Chart)):
+        if getattr(source, "height", None) is not None and isinstance(source.height, (int, float)):
+            return int(source.height)
+        source = source.to_dict()
 
-def show_spec(source, height=300, border=True):
-    """Render a chart inside an explicit non-overlapping container."""
+    if isinstance(source, dict):
+        if isinstance(source.get("height"), (int, float)):
+            return int(source["height"])
+        if isinstance(source.get("spec"), dict):
+            h = get_chart_height(source["spec"], None)
+            if h is not None:
+                return h
+        for key in ("vconcat", "hconcat", "layer"):
+            if isinstance(source.get(key), list):
+                heights = [get_chart_height(child, 0) for child in source[key]]
+                if any(heights):
+                    return int(sum(heights) if key == "vconcat" else max(heights))
+    return fallback
+
+def show_spec(source, fallback_height=400, padding=200, border=True):
     if isinstance(source, str):
         name = source
         source = load_spec(name)
         if source is None:
             st.warning(f"outputs/{name}.json not found")
-            source = placeholder(height)
+            source = placeholder(fallback_height)
 
-    with st.container(height=height, border=border):
+    chart_h = get_chart_height(source, fallback=fallback_height)
+
+    with st.container(border=border):
         if isinstance(source, (alt.TopLevelMixin, alt.Chart)):
-            st.altair_chart(source.properties(height=max(height - 40, 120)), width="stretch")
-        elif isinstance(source, dict):
-            spec = {**source, "height": max(height - 40, 120)}
-            st.vega_lite_chart(spec, width="stretch")
+            st.altair_chart(source, width="stretch")
+        elif isinstance(source, dict): #permet small multiples
+            st.vega_lite_chart(source, width="stretch")
         else:
             st.error(f"Unsupported chart type: {type(source).__name__}")
 
