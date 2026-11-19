@@ -10,7 +10,6 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(layout="wide")   # must be the first Streamlit call
 
 
 def placeholder(height):
@@ -33,24 +32,34 @@ def load_spec(name):
         return json.load(f)
 
 
-q1v1 = load_spec("Q1V1")
-q1v2 = load_spec("Q1V2")
-q3 = load_spec("Q3")
+def show_spec(source, height=300):
+    """Render a chart from a file name, a Vega-Lite dict, or an Altair chart."""
+    if isinstance(source, str): #carrega la imatge
+        name = source
+        source = load_spec(name)
+        if source is None:
+            st.warning(f"outputs/{name}.json not found")
+            source = placeholder(height)
+
+    if isinstance(source, (alt.TopLevelMixin, alt.Chart)): #Per les charts soles
+        st.altair_chart(source, width="stretch")
+
+    elif isinstance(source, dict):      #pels small multiples
+        st.vega_lite_chart(source, width="stretch")
+    else:
+        st.error(f"Unsupported chart type: {type(source).__name__}")
+
+#Grafiquem amb layout
 
 
-# Top row: two charts, left narrower than right
+st.set_page_config(layout="wide")   # must be the first Streamlit call
+
+
 col_left, col_right = st.columns([3, 4])
 with col_left:
-    st.vega_lite_chart(q1v1)
+    show_spec("Q1V1", 350)
 with col_right:
-    st.vega_lite_chart(q1v2, width="stretch")
+    show_spec("Q4", 350)
 
-# Bottom: two full-width charts, one per row
-
-if q3 is not None:
-    st.vega_lite_chart(q3)            # small multiples keep the size set in the notebook
-else:
-    st.warning("outputs/Q3.json not found")
-    st.altair_chart(placeholder(180), width="stretch")
-
-st.altair_chart(placeholder(180), width="stretch")
+show_spec("Q3", 1800)
+show_spec("Q2", 1800)
